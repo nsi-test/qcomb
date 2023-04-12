@@ -3,17 +3,15 @@
 set_time_limit(30); //maximum execution time in seconds - just in case of a bug, to save the servers recource 
 //not working with WSL
 
-require_once "myhtmldom.php";
-
-$htd = new MyHtmlDom();
 
 function phpAlert($msg) {
     echo '<script type="text/javascript">alert("' . $msg . '")</script>';
 } //thanks to maqs from stack overflow
 
 
+
 function setVar($var, $val) {
-    echo '<script type="text/javascript">var ' . $var . ' = ' . $val . ' </script>';
+    echo '<script type="text/javascript">var ' . $var . ' = ' . $val . ' </script>' . "\n";
 } //mine
 
 
@@ -43,7 +41,7 @@ function fileLog($msg) {
 
 
 //reset part
-function reset_it() {
+function reset_it($form_get_string) {
     //the whole cookie deletion part and session things in this function is Tony Stark's, SOf
     $_SESSION = array();
 
@@ -59,7 +57,8 @@ function reset_it() {
     session_destroy();
 
     //mine - to start a new session, cookie, etc.
-    echo '<script type="text/javascript">window.open("' . "${_SERVER['REQUEST_SCHEME']}://${_SERVER['HTTP_HOST']}{$_SERVER['PHP_SELF']}?form=generate" .  '", "_self")</script>';
+    $req_scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    echo '<script type="text/javascript">window.open("' . "$req_scheme://${_SERVER['HTTP_HOST']}{$_SERVER['PHP_SELF']}?form=$form_get_string" .  '", "_self")</script>';
 
 }
 

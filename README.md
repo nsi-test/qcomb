@@ -1,10 +1,10 @@
 # QComb - generator of random combinations of characters.
 Mostly used for passwords.
 
-(v1.0)
+(v1.1)
 
 ### Prerequisites:
-- Linux
+- Linux, Windows (developed and tested with Linux, tested with Windows IIS. It may work in other OS environments too because the main thing is Web server and PHP)
 - PHP >= 7.2
 - PHP extensions:
   - php-xml (for html & xml work)
@@ -29,16 +29,7 @@ chcon -R -t httpd_sys_rw_content_t /path-to web-content/qcomb
 
 http(s)://IP_OR_SERVER_ADDRESS/qcomb
 
-### To use the script only:
-
-  - Enter the qcomb directory
-  - edit id2passgenerate.ini for the settings
-  - type:
-```
-php id2passgenerate.php --help
-```
-
-### Usage (both web & script):
+### Usage (there is a help page in the web interface for more):
 
 You need to define a character set, requirements, number of combination characters, number of combinations and uniqueness necessity.
 
@@ -47,8 +38,6 @@ There are defaults which values are in the web controls. The character set is li
 There is config.xml file in which you can set debug logging in a log file (qlog.txt). It is off by default and not recomended for ordinary use.
 
 You can download the results into tab delimited csv file on your computer.
-
-Unique for the script - it uses an input file with id-s and generates a tab delimited csv with the results mapped by id-s (it is for usefulness, id-s can be serial numbers, computer names, usernames, etc.)
 
 ### Short description of the software:
 
