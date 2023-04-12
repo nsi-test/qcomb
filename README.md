@@ -29,7 +29,7 @@ chcon -R -t httpd_sys_rw_content_t /path-to web-content/qcomb
 
 http(s)://IP_OR_SERVER_ADDRESS/qcomb
 
-### Usage (there is a help page for more):
+### Usage (there is a help page in the web interface for more):
 
 You need to define a character set, requirements, number of combination characters, number of combinations and uniqueness necessity.
 
