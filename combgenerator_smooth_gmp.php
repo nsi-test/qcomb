@@ -4,11 +4,14 @@
 require_once "wcombin_gmp.php";
 require_once "chsetbuilder2.php";
 
+require_once "combfunc_giver.php"; //some funcs
 
 class CombGenerator_GMP {
 
     private $wcomb_gmp; //WCombinGMP object
     public $chsbuilder; //CHSBuilder object
+
+    private $cfunc_giver; //CFuncGiver object
 
     private $combcharnumb; //number of characters in combination (int)
     private $combnumb; //number of combinations (int)
@@ -17,17 +20,28 @@ class CombGenerator_GMP {
 
     private $gen_settings; //array (assoc)
 
+    private $outer_funcs; //assoc array //gotten from other obj
+
 
     function __construct() {
 
         $this->chsbuilder = new CHSBuilder();    
 
+        //1.1 - trying to be ready at first... 
+        $this->combcharnumb = 8;
+	$this->combnumb = 10;
+
+        $this->cfunc_giver = new CFuncGiver();
+
+        //requirement aray defining start
 
         $this->requirements = array_flip(array('littles', 'CAPS', 'digits', 'specials', 'space'));
 
         foreach ($this->requirements as $k=>$val) $this->requirements[$k] = Array();
  
-        foreach ($this->requirements as $k=>$ar) $this->requirements[$k]['req'] = false;
+        foreach ($this->requirements as $k=>$ar) $this->requirements[$k]['req'] = true; //1.1 ..
+
+        $this->requirements['space']['req'] = false;
 
         $chsgets = array("give_littles", "give_CAPS", "give_digits", "give_specials", "give_space"); //"give" (!)
 
@@ -39,8 +53,39 @@ class CombGenerator_GMP {
 
         foreach ($this->requirements as $k=>$ar) $this->requirements[$k]['res'] = false; 
        
-        $this->gen_settings['uniques_only'] = false;
+        //requirements array defined
 
+        $this->previous_requirements = $this->requirements;
+
+        //previous requirements copied and the same
+
+
+        $this->gen_settings['uniques_only'] = true;
+
+        //1.1
+        $this->gen_settings['map_from_id'] = false;
+
+        $this->gen_settings['produce_from_id'] = 0; //new - values 1, 2, 0
+
+        $this->outer_funcs['test'] = $this->cfunc_giver->give_func('test'); //of course it's not that one
+
+        $this->outer_funcs['produced_combinations'] = $this->cfunc_giver->give_func('produced_combinations'); //the func
+        //\1.1
+
+    }
+
+    //requirements comparison callback
+    function cmp_reqs($a, $b) {
+        if ($a['req'] === $b['req']) return 0;
+        return ($a['req'] > $b['req'])? 1:-1;
+    } 
+
+    function reqs_differ_from_previous() {
+       return array_udiff_assoc($this->requirements, $this->previous_requirements, [$this, 'cmp_reqs']);  
+    }
+
+    function copy_reqs_to_previous() {
+        $this->previous_requirements = $this->requirements;
     }
 
 
@@ -53,6 +98,31 @@ class CombGenerator_GMP {
     function get_uniqueness() {
         return $this->gen_settings['uniques_only'];
     }
+
+    //1.1
+    function insist_id_map($id_map = true) {
+        $this->gen_settings['map_from_id'] = $id_map;
+    }
+
+    function get_id_mapping() {
+        return $this->gen_settings['map_from_id'];
+    }
+
+    //produce f-s
+    function insist_id_produce($id_produce = 1) { //attention...
+        if ($id_produce)
+            $this->set_reqs_from_mask('00111'); //the reqs for this case
+        //else
+        //    $this->set_reqs_from_mask('01111'); //the reqs for standart case (bad idea)
+
+        $this->gen_settings['produce_from_id'] = $id_produce; //whatever is there (0 is important)
+    }
+
+    function get_id_producing() {
+        return $this->gen_settings['produce_from_id'];
+    }
+    //\1.1
+
 
 //smooth functions (reqs, etc.)
 
@@ -157,11 +227,15 @@ class CombGenerator_GMP {
     }
 
     return true;
-    } //na praktika testvana, ne tr. da ima golqma razl. s charset (mnogo iteracii)
+    } //there shouldn't be much difference with charset (results in many iterations)
 
 
     function conform_chset_toreqs() {
 
+        filelog("CONFRM_CHSTTOREQS BEGINS... \n");
+        filelog("INITIAL CNFRM SNIFF::" . $this->chsbuilder->sniff_charsetstr() . "\n");
+
+        //from 1.0
         $to_exclude = "";
 
         foreach ($this->requirements as $k=>$ar) {
@@ -170,31 +244,48 @@ class CombGenerator_GMP {
 
 
         echo "DEBUG IN conformchsettoreqs to_exclude:" . $to_exclude . "\n";
+        filelog("DEBUG IN conformchsettoreqs to_exclude::" . $to_exclude . "\n");
 
-        $this->chsbuilder->set_excluded($to_exclude);
+        filelog("IN CONFORM_chstoreqs - before chsb->set_excluded - sniff::" . $this->chsbuilder->sniff_charsetstr() . "\n");
+
+        $this->chsbuilder->set_excluded($to_exclude, true); //$conforming=true
 
         $this->chsbuilder->exclude_them(); //exclude part end
 
 	echo "DEBUG IN conformchsettoreqs after exclude chsb (length value):" . strlen($this->chsbuilder->sniff_charsetstr()) . " ";
         if (PHP_SAPI === 'cli') $this->chsbuilder->sniff_charsetstr() . "\n";
         else echo urlencode($this->chsbuilder->sniff_charsetstr());
+        //from 1.0
 
+        filelog("IN CONFORM_chstoreqs - AFTER exclude_them - sniff::" . $this->chsbuilder->sniff_charsetstr() . "\n");
+
+
+
+        //for each ch class req - if yes add the ch class
         foreach ($this->requirements as $k=>$ar) {
-            if ($ar['req'] && !array_intersect(str_split($this->get_charset()), $this->get_a_ch_sort($k))) {
-                //get_charset() gets from wcomb
-                print_r(array_intersect(str_split($this->get_charset()), $this->get_a_ch_sort($k)));
+            if ($ar['req'] && !array_intersect(str_split($this->chsbuilder->sniff_charsetstr()), $this->get_a_ch_sort($k))) {
+            //if ($ar['req'] && !$sort_intersect_k) {
+              
+                filelog("IN COFRM, REQ INTRSCT: " . print_r(array_intersect(str_split($this->chsbuilder->sniff_charsetstr()), $this->get_a_ch_sort($k))), true);
                 $agfn = str_replace("give", "get", $ar['get_fns']);
                 $this->chsbuilder->$agfn(); //no return
             }
         }
+        
+        //setting it
+
+        if (strlen($this->chsbuilder->sniff_charsetstr()) == 0) //the easy condition but later it shows... //not sure anymore...
+            throw new Exception("You cannot have an empty set of requirements.");
 
 	echo "DEBUG in conformchsettoreqs after add missing chsb: vnmv (length value)|" . strlen($this->chsbuilder->sniff_charsetstr()) . " ";
         if (PHP_SAPI === 'cli') echo $this->chsbuilder->sniff_charsetstr() . "\n";
         else echo urlencode($this->chsbuilder->sniff_charsetstr());
 
+        filelog("CONFRM BEFORE setcharset... \n");
         $this->set_charset(); //once and in the end!
+        filelog("CONFRM AFTER setcharset... \n");
 
-    }
+    } //conform_chset_toreqs
 
 
 
@@ -216,6 +307,19 @@ class CombGenerator_GMP {
     }
 
 
+//1.1
+
+    function conform_reqs_toneeds() { //?
+        foreach ($this->chsbuilder->show_needs() as $k=>$need) {
+            if ($k === "exclude") continue;
+            if ($need) $this->requirements[$k]['req'] = true;
+            else $this->requirements[$k]['req'] = false;
+        }
+    }
+
+
+
+//\1.1
 
 //end smooth s...
 
@@ -236,11 +340,13 @@ class CombGenerator_GMP {
 //setters
 
     function set_charset($charsetstr="") {
-        if ($charsetstr) {
+        if (strlen($charsetstr) > 0) {
             $this->wcomb_gmp = new WCombin_GMP($charsetstr);
+            filelog("set_chs BEFORE RETURN chs::" . $charsetstr . "::strlen::" . strlen($charsetstr));
             return;
         }
 
+        filelog("set_CHS BEFORE SET 95 devpt_chs::" . $charsetstr . "::strlen::" . strlen($charsetstr));
         $this->wcomb_gmp = new WCombin_GMP($this->chsbuilder->get_charsetstr()); //this is a very subtle point!!
 
     }
@@ -297,7 +403,9 @@ class CombGenerator_GMP {
 
     }
 
-    function get_combinations() { //returns array
+    function get_combinations($ids = []) { //returns array 
+//1.1 ids are optional ids (serials) if we want hard dependence (not randomness)
+ 
         echo "DEBUG: Start of get_combinations...\n";
 
         $combinations = array();
@@ -306,6 +414,16 @@ class CombGenerator_GMP {
         if (!$this->combcharnumb) throw new Exception("number of characters not defined!");
         if (!$this->combnumb) throw new Exception("number of combinations not defined!");
 
+        //1.1
+
+        //phpAlert("AAAA: " . $this->chsbuilder->is_produce_case());
+        if ($this->chsbuilder->is_produce_case()) {
+
+            return $this->outer_funcs['produced_combinations']($this, $ids);
+
+        }
+
+        //\1.1
 
         $maxmin = $this->get_max_min();
 
@@ -332,13 +450,17 @@ class CombGenerator_GMP {
 		elseif (!in_array($cur_combin, $combinations)) break; //first while
 	    }
 
-            array_push($combinations, $cur_combin); 
+            array_push($combinations, [$cur_combin]); //an array because of 1.1
         } 
                     
 
         return $combinations;
 
     }
+
+    //1.1
+    function wcomb_gmp_number2str($gmp_integer) { return $this->wcomb_gmp->number2str($gmp_integer);}
+    //\1.1
 
 
 //it is CS.
