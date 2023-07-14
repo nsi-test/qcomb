@@ -76,7 +76,7 @@ function shutdown_handler() {
     print_r($error);
     phpAlert("Error type: ${error['type']} | Message: ${error['message']} | File: ${error['file']} | Line number: ${error['file']}");
 
-    reset_it();
+    reset_it('generate');
 
 }
 

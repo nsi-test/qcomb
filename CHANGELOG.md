@@ -1,3 +1,6 @@
+## v1.1.1
+  - Bug fixed in shutdown function
+
 ## v1.1
   - Added "map ids from csv" mode
   - Added "produce from ids (csv)" mode
