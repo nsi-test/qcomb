@@ -1,7 +1,7 @@
 # QComb - generator of random combinations of characters.
 Mostly used for passwords.
 
-(v1.1)
+(v1.1.1)
 
 ### Prerequisites:
 - Linux, Windows (developed and tested with Linux, tested with Windows IIS. It may work in other OS environments too because the main thing is Web server and PHP)
