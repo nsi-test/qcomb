@@ -1,3 +1,6 @@
+## v1.2.0
+  - Added compatibility with PHP >= 8.0
+
 ## v1.1.1
   - Bug fixed in shutdown function
 

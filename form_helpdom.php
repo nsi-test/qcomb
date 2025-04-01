@@ -5,7 +5,7 @@
 
 require_once "help_txt.php";
 
-$form_help = new MyFormDom($htd->get_dom(), "form_gen", $_SERVER['REQUEST_URI']);
+$form_help = new MyFormDom($htd, "form_help", $_SERVER['REQUEST_URI']); //8.x compat
 
 $form_help->add_text_element('h1', 'QComb v1.1');
 $h_header = $form_help->add_text_element('h2', 'Help');
@@ -91,6 +91,6 @@ foreach ($help_ordered_list->childNodes as $k=>$num_li) {
 
 }
 
-
+$form_help->remove_me_from_dom(); //8.x compat
 
 ?>

@@ -4,7 +4,7 @@
 //form showtable
 
 
-$form_show = new MyFormDom($htd->get_dom(), "form_show", $_SERVER['REQUEST_URI']);
+$form_show = new MyFormDom($htd, "form_show", $_SERVER['REQUEST_URI']); //8.x compat
 
 $combs_heading = $form_show->add_text_element('h2', 'Your combinations: ');
 $form_show->add_id_to_element($combs_heading, "combs_heading");
@@ -187,5 +187,6 @@ $form_show->set_init_callable($form_show_init); //index 0
 
 $form_show->set_init_callable($put_content_in_table); //index 1
 
+$form_show->remove_me_from_dom(); //8.x compat
 
 ?>

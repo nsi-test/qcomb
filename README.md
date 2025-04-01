@@ -1,11 +1,11 @@
 # QComb - generator of random combinations of characters.
 Mostly used for passwords.
 
-(v1.1.1)
+(v1.2.0)
 
 ### Prerequisites:
 - Linux, Windows (developed and tested with Linux, tested with Windows IIS. It may work in other OS environments too because the main thing is Web server and PHP)
-- PHP >= 7.2, < 8.0
+- PHP >= 7.2, < 8.0 (versions before v1.2.0 work only with PHP 7.x)
 - PHP extensions:
   - php-xml (for html & xml work)
   - php-gmp (for arbitrary-length integers work)

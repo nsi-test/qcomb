@@ -2,14 +2,14 @@
 
 //form generate
 
-$form_gen = new MyFormDom($htd->get_dom(), "form_gen", $_SERVER['REQUEST_URI']);
+$form_gen = new MyFormDom($htd, "form_gen", $_SERVER['REQUEST_URI']); //8.x compat
 
 
 $htd->add_css_link('tooltips.css');
 
 $form_gen->set_get_string('generate'); //this is for reset_all at first
 
-$form_gen->add_text_element('h1', 'QComb v1.1');
+$form_gen->add_text_element('h1', 'QComb v1.2.0');
 $form_gen->add_text_element('h2', 'Combination generator');
 
 
@@ -597,5 +597,7 @@ $form_gen_init = function($form) {
 
 
 $form_gen->set_init_callable($form_gen_init);
+
+$form_gen->remove_me_from_dom(); //8.x compat
 
 ?>

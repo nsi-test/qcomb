@@ -3,7 +3,7 @@
 
 //form charset
 
-$form_chset = new MyFormDom($htd->get_dom(), "form_chset", $_SERVER['REQUEST_URI']);
+$form_chset = new MyFormDom($htd, "form_chset", $_SERVER['REQUEST_URI']); //8.x compat
 
 $form_chset->set_get_string('charset');
 
@@ -447,8 +447,6 @@ $form_chset_init = function($form) {
 
 $form_chset->set_init_callable($form_chset_init);
 
-
-
-
+$form_chset->remove_me_from_dom(); //8.x compat
 
 ?>

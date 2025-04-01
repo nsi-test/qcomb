@@ -5,8 +5,8 @@
 class MyHtmlDom {
 
 
-    protected $dom; //DOM document
-    protected $head, $body; 
+    public $dom; //DOM document //8.x compat - public
+    public $head, $body; 
     
 
     function __construct() {
@@ -103,6 +103,7 @@ class MyHtmlDom {
 
 class MyFormDom {
 
+	private $htd; //8.x compat
     private $dom; //corresponding
     private $form;
     private $id;
@@ -114,15 +115,19 @@ class MyFormDom {
 
     private $dom_head; //1.1
 
-    function __construct($dom, $id, $action, $method = "post") {
+    function __construct($htd, $id, $action, $method = "post") { //8.x compat
 
         $this->id = $id;
 
-        $this->dom = $dom;
+		$this->htd = $htd; //8.x compat
+
+		$this->dom = $htd->dom; //8.x compat, former $this->dom = $dom;
         
         $this->dom_head = $this->dom->getElementsByTagName("head")[0]; //beleave it's only one
 
         $this->form = $this->dom->createElement("form");
+
+		$this->htd->body->appendChild($this->form); //8.x compat, crucial
 
         $this->form->setAttribute("id", $this->id);
 
@@ -143,8 +148,12 @@ class MyFormDom {
         $this->input_tags = array("input", "select", "textarea");
 
 
-    }
+    } //MyFormDom constructor
 
+
+    function remove_me_from_dom() { //8.x compat function important
+        $this->htd->body->removeChild($this->form);
+    }
 
     //no display - it is in dom class
 
