@@ -134,7 +134,7 @@ $form_show_init = function($form) {  //index 0
 
     //1.1
 
-    $form->add_form_page_title("QComb v1.1 - Result");
+    $form->add_form_page_title("QComb " . QC_VERSION . " - Result");
 
 
     if ($_SESSION['CG']->get_id_producing()) {

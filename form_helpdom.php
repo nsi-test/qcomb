@@ -7,14 +7,14 @@ require_once "help_txt.php";
 
 $form_help = new MyFormDom($htd, "form_help", $_SERVER['REQUEST_URI']); //8.x compat
 
-$form_help->add_text_element('h1', 'QComb v1.1');
+$form_help->add_text_element('h1', 'QComb  ' . QC_VERSION);
 $h_header = $form_help->add_text_element('h2', 'Help');
 $h_header->setAttribute("style", "position:relative; left:140px; font-weight:bold;");
 
 
 $form_help_init = function($form) {
 
-    $form->add_form_page_title("QComb v1.1 - HELP");
+    $form->add_form_page_title("QComb " . QC_VERSION . " - HELP");
 
 }; //closure
 

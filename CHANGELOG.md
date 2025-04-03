@@ -1,3 +1,6 @@
+## v1.2.1
+  - Corrected the appropriate version presentation in forms, tab titles, etc.
+
 ## v1.2.0
   - Added compatibility with PHP >= 8.0
 

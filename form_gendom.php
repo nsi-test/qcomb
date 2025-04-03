@@ -9,7 +9,7 @@ $htd->add_css_link('tooltips.css');
 
 $form_gen->set_get_string('generate'); //this is for reset_all at first
 
-$form_gen->add_text_element('h1', 'QComb v1.2.0');
+$form_gen->add_text_element('h1', 'QComb ' . QC_VERSION);
 $form_gen->add_text_element('h2', 'Combination generator');
 
 
@@ -425,7 +425,7 @@ $form_gen->add_submit_callable('resetall', $resetall_call);
 
 $form_gen_init = function($form) {
 
-    $form->add_form_page_title("QComb v1.1 - Generate");
+    $form->add_form_page_title("QComb " . QC_VERSION . " - Generate");
 
     $form->get_dom()->getElementByID("generate")->setAttribute("type", "submit"); //unconditional, I thing its ok...
 

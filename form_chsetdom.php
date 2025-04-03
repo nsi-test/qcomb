@@ -419,7 +419,7 @@ $form_chset->add_submit_callable('resetall', $resetall_call); //see above
 
 $form_chset_init = function($form) {
 
-    $form->add_form_page_title("QComb v1.1 - Character Set");
+    $form->add_form_page_title("QComb " . QC_VERSION . " - Character Set");
 
     $_SESSION['CG']->conform_needs_toreqs();
     filelog("IN F_CHSet_INIT: AFTER conform needs to reqs: " . print_r($_SESSION['CG']->chsbuilder->show_needs(), true));

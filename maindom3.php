@@ -1,5 +1,7 @@
 <?php
 
+define("QC_VERSION", "v1.2.1");
+
 require_once "htmldocdom.php";
 
 require_once "myhtmldom.php";
